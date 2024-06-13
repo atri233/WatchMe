@@ -7,144 +7,149 @@ namespace WatchMe;
 
 public class GetInfo
 {
-    private bool ShowEve;
-
+    private bool showEve ;//是否显示每个进程的具体占用
+    private string systemArchitecture; //系统架构
+    private string operatingSystem;   //操作系统
+    public double totalPhysicalMemory;    //总物理内存
+    private double totalVirtualMemory;    //总虚拟内存
+    private double availablePhysicalMemory;    //剩余物理内存
+    private double totalMem; //总占用内存
+    private bool is_64; //是否为64位操作系统
+    private int processorCount; //cpu核心数
+    private string machineName;    //主机名称
+    private double workingSet;  //本应用占用内存
+    private string? info;//每个进程的具体占用
     /// <summary>
-    /// 有参，是否显示具体进程占用
+    /// 有参，是否显示具体占用
     /// </summary>
     /// <param name="showEve"></param>
     public GetInfo(bool showEve)
     {
         ShowEve = showEve;
+        SetInfo();
     }
     /// <summary>
-    /// 填入系统环境到文件中
+    /// 填入系统环境到属性中
     /// </summary>
     public void SetInfo()
     {
-         //控制台输出到文本中
-        var streamWriter = new StreamWriter("DataMe.txt");
-        Console.SetOut(streamWriter);
-        
         var p = Process.GetProcesses(); //获取所以正在运行的进程信息
 
-        double totalMem = 0;//总占用内存
-
-        string info = "";//存储进程名称
-        
+        totalMem = 0;//总占用内存
         /*
          * 获取所有进程占用内存
          */
-        foreach (Process pr in p)
-        
+        foreach (var pr in p)
         {
             totalMem += (double)pr.WorkingSet64 / 1024/1024;//自增总内存
             var prWorkingSet64 = ((double)pr.WorkingSet64 / (1024 *1024) );
             prWorkingSet64 = Math.Round(prWorkingSet64, 2);
-            
-            info += pr.ProcessName + "内存：——" + prWorkingSet64 + "MB\n"; //得到进程内存,三位小数(win是\r\n,lin是\n)
-
-        }
-        var computerInfo = new ComputerInfo();
-        Console.WriteLine("本机使用操作系统:"+computerInfo.OSFullName);
-        Console.WriteLine("本机物理内存:"+Math.Round((double)computerInfo.TotalPhysicalMemory/1024/1024,2)+"MB");
-        Console.WriteLine("本机虚拟内存:"+Math.Round((double)computerInfo.TotalVirtualMemory/1024/1024,2)+"MB");
-        Console.WriteLine("本机物理内存剩余:"+Math.Round((double)computerInfo.AvailablePhysicalMemory/1024/1024,2)+"MB");
-        
-        Console.WriteLine("总占用内存:" + Math.Round(totalMem,2) + "M");
-        
-        // Console.WriteLine("判断是否为Windows Linux OSX");
-        //
-        // Console.WriteLine($"Linux:{RuntimeInformation.IsOSPlatform(OSPlatform.Linux)}");
-        //
-        // Console.WriteLine($"OSX:{RuntimeInformation.IsOSPlatform(OSPlatform.OSX)}");
-        //
-        // Console.WriteLine($"Windows:{RuntimeInformation.IsOSPlatform(OSPlatform.Windows)}");
-
-        Console.WriteLine($"系统架构：{RuntimeInformation.OSArchitecture}");
-
-        // Console.WriteLine($"系统名称：{RuntimeInformation.OSDescription}");
-
-        Console.WriteLine($"进程架构：{RuntimeInformation.ProcessArchitecture}");
-
-        Console.WriteLine($"是否64位操作系统：{Environment.Is64BitOperatingSystem}");
-
-        Console.WriteLine("CPU 核心:" + Environment.ProcessorCount);
-
-        Console.WriteLine("主机名称:" + Environment.MachineName);
-
-        // Console.WriteLine("Version:" + Environment.OSVersion);
-        
-        Console.WriteLine("当前程序使用内存:" + Math.Round((double)Environment.WorkingSet/1024/1024,2));
-        if (ShowEve)
-        {
-            Console.WriteLine(info);//显示所有进程的字符串
-        }
-
-/*// Console.ReadLine();
-
-//创建一个ProcessStartInfo对象 使用系统shell 指定命令和参数 设置标准输出
-
-        var psi = new ProcessStartInfo("top", " -b -n 1") { RedirectStandardOutput = true };
-
-//启动
-
-        var proc = Process.Start(psi);
-
-//   psi = new ProcessStartInfo("", "1") { RedirectStandardOutput = true };
-
-//启动
-
-// proc = Process.Start(psi);
-
-        if (proc == null)
-
-        {
-            Console.WriteLine("Can not exec.");
-        }
-
-        else
-
-        {
-            Console.WriteLine("-------------Start read standard output-------cagy-------");
-
-//开始读取
-
-            using (var sr = proc.StandardOutput)
-
+            if (ShowEve)
             {
-                while (!sr.EndOfStream)
-
-                {
-                    Console.WriteLine(sr.ReadLine());
-                }
-
-                if (!proc.HasExited)
-
-                {
-                    proc.Kill();
-                }
+                info += pr.ProcessName + "内存：——" + prWorkingSet64 + "MB\n"; //得到进程内存,三位小数(win是\r\n,lin是\n)
             }
+        }
+        
+        var computerInfo = new ComputerInfo();  //创建查询环境实例
+        
+        operatingSystem = computerInfo.OSFullName;
+        
+        totalPhysicalMemory = Math.Round((double)computerInfo.TotalPhysicalMemory / 1024 / 1024, 2);
+        
+        totalVirtualMemory = Math.Round((double)computerInfo.TotalVirtualMemory / 1024 / 1024, 2);
+        
+        availablePhysicalMemory = Math.Round((double)computerInfo.AvailablePhysicalMemory / 1024 / 1024, 2);
+        
+        totalMem = Math.Round(totalMem, 2);
+        
+        systemArchitecture = RuntimeInformation.OSArchitecture.ToString();
 
-            Console.WriteLine("---------------Read end-----------cagy-------");
+        is_64 = Environment.Is64BitOperatingSystem;
 
-            Console.WriteLine($"Total execute time :{(proc.ExitTime - proc.StartTime).TotalMilliseconds} ms");
+        processorCount = Environment.ProcessorCount;
 
-            Console.WriteLine($"Exited Code ： {proc.ExitCode}");*/
+        machineName = Environment.MachineName;
 
-            streamWriter.Flush();
-            // streamWriter.Close();
+        workingSet = Math.Round((double)Environment.WorkingSet / 1024 / 1024, 2);
+        
+        
     }
     
     public void Get()
     {
-        var streamReader = new StreamReader("DataMe.txt",Encoding.UTF8);
-        using (streamReader)
-        {
-            while (!streamReader.EndOfStream)
-            {
-                Console.WriteLine(streamReader.ReadLine());
-            }
-        }
+        
+    }
+
+
+    public bool ShowEve
+    {
+        get => showEve;
+        set => showEve = value;
+    }
+
+    public string SystemArchitecture
+    {
+        get => systemArchitecture;
+        set => systemArchitecture = value;
+    }
+
+    public string OperatingSystem
+    {
+        get => operatingSystem;
+        set => operatingSystem = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public double TotalPhysicalMemory
+    {
+        get => totalPhysicalMemory;
+        set => totalPhysicalMemory = value;
+    }
+
+    public double TotalVirtualMemory
+    {
+        get => totalVirtualMemory;
+        set => totalVirtualMemory = value;
+    }
+
+    public double AvailablePhysicalMemory
+    {
+        get => availablePhysicalMemory;
+        set => availablePhysicalMemory = value;
+    }
+
+    public double TotalMem
+    {
+        get => totalMem;
+        set => totalMem = value;
+    }
+
+    public bool Is64
+    {
+        get => is_64;
+        set => is_64 = value;
+    }
+
+    public int ProcessorCount
+    {
+        get => processorCount;
+        set => processorCount = value;
+    }
+
+    public string MachineName
+    {
+        get => machineName;
+        set => machineName = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public double WorkingSet
+    {
+        get => workingSet;
+        set => workingSet = value;
+    }
+
+    public string? Info
+    {
+        get => info;
+        set => info = value;
     }
 }
