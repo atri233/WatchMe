@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using NickStrupat;
 
-namespace Start_Me;
+namespace WatchMe;
 
 public class GetInfo
 {
@@ -132,6 +133,18 @@ public class GetInfo
             Console.WriteLine($"Exited Code ： {proc.ExitCode}");*/
 
             streamWriter.Flush();
-            streamWriter.Close();
+            // streamWriter.Close();
+    }
+    
+    public void Get()
+    {
+        var streamReader = new StreamReader("DataMe.txt",Encoding.UTF8);
+        using (streamReader)
+        {
+            while (!streamReader.EndOfStream)
+            {
+                Console.WriteLine(streamReader.ReadLine());
+            }
+        }
     }
 }
