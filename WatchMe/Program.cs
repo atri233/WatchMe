@@ -20,7 +20,7 @@ public class Program
         var deserialize = JsonSerializer.Deserialize<GetInfo>(JsonSerializer.Serialize(getInfo,jsonSerializerOptions));
         Console.WriteLine(deserialize.MachineName);
 
-        // var client = new Client(9944);    //配置服务器端口
-        // client.Start();     //开启服务器
+        var client = new Client(9944);    //配置服务器端口
+        client.Start();     //开启服务器
     }
 }
