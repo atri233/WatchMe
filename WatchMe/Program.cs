@@ -8,7 +8,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        var getInfo = new GetInfo(true);
+        var getInfo = new GetInfo(false);
         //序列化配置
         var jsonSerializerOptions = new JsonSerializerOptions
         {
