@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
 namespace WatchMe;
 
@@ -75,7 +76,7 @@ public class Client
                 const string be = "welcome";
                 var bytes = Encoding.Default.GetBytes(be);
                 networkStream.Write(bytes, 0, bytes.Length);
-                
+
                 //开启一个线程发心跳
                 var thread = new Thread(HeartBeat);
                 thread.Name = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString() + "heart";
@@ -89,19 +90,19 @@ public class Client
                 {
                     try
                     {
+                        //以下为数据读取逻辑
                         getbytes = networkStream.Read(buffer, 0, buffer.Length); //阻塞
                         if (getbytes > 0)
                         {
                             // 将接收到的数据写入到缓存中
                             messageStream.Write(buffer, 0, getbytes);
                         }
+                        //先转字节再转字符串
+                        var getString = Encoding.Default.GetString(messageStream.ToArray()); 
+                        var dataType = ResultWM<string>.GetDataType(getString); //获取处理后数据
+                        var typeGet = TypeSolve.TypeGet(dataType); //获取相对应类型的返回值
+                        Console.WriteLine(typeGet?.GetType()+"\n"+typeGet?.ToString());
 
-                        var getBytes = messageStream.ToArray(); //收到的消息转字节数组
-                        var getString = Encoding.Default.GetString(getBytes); //将字节数组编码成String字符串
-                        //普通文本输出
-                        Console.WriteLine(getString);
-                        //将字符串反序列化为对象(需要一个对象标识)
-                        // Console.WriteLine("接受的网络信息流：\n" + JsonSerializer.Deserialize<GetInfo>(getString).MachineName);
                     }
                     catch (Exception e)
                     {

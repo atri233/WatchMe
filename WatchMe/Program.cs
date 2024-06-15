@@ -16,7 +16,7 @@ public class Program
             WriteIndented = true    //美化打印效果
         };
         
-        Console.Write(JsonSerializer.Serialize(getInfo,jsonSerializerOptions));
+        Console.Write("本机环境：\n"+JsonSerializer.Serialize(getInfo,jsonSerializerOptions));
         // var deserialize = JsonSerializer.Deserialize<GetInfo>(JsonSerializer.Serialize(getInfo,jsonSerializerOptions));
         // Console.WriteLine(deserialize.MachineName);
 
