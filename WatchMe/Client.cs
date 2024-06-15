@@ -14,7 +14,7 @@ public class Client
     private readonly TcpListener _tcpListener;
 
     /// <summary>
-    ///     有参构造，传入端口开启实例
+    /// 有参构造，传入端口开启实例
     /// </summary>
     /// <param name="port"></param>
     public Client(int port)
@@ -71,6 +71,11 @@ public class Client
             var networkStream = tcpClient.GetStream(); //接收网络数据流(自动释放)(阻塞式的方式)
             using (networkStream)
             {
+                //输入欢迎消息
+                const string be = "welcome";
+                var bytes = Encoding.Default.GetBytes(be);
+                networkStream.Write(bytes, 0, bytes.Length);
+                
                 //开启一个线程发心跳
                 var thread = new Thread(HeartBeat);
                 thread.Name = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString() + "heart";
@@ -84,7 +89,7 @@ public class Client
                 {
                     try
                     {
-                        getbytes = networkStream.Read(buffer, 0, buffer.Length);
+                        getbytes = networkStream.Read(buffer, 0, buffer.Length); //阻塞
                         if (getbytes > 0)
                         {
                             // 将接收到的数据写入到缓存中
@@ -137,6 +142,7 @@ public class Client
                     Console.WriteLine(Thread.CurrentThread.Name + "：用户断开连接");
                     break;
                 }
+
                 Thread.Sleep(1000);
             }
             catch (Exception e)
