@@ -47,7 +47,7 @@ public class GetInfo
             prWorkingSet64 = Math.Round(prWorkingSet64, 2);
             if (ShowEve)
             {
-                info += pr.ProcessName + "内存：——" + prWorkingSet64 + "MB\n"; //得到进程内存,三位小数(win是\r\n,lin是\n)
+                info += pr.ProcessName + "内存:" + prWorkingSet64 + "MB"; //得到进程内存,三位小数(win是\r\n,lin是\n)
             }
         }
         

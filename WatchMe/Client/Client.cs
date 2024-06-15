@@ -10,6 +10,8 @@ namespace WatchMe;
 /// </summary>
 public class Client
 {
+    static string Head = "WMTYPE"; //头信息
+    static string Tail = "WMOVER"; //尾信息
     private readonly IPAddress _ipAddress;
     private readonly int _port;
     private readonly TcpListener _tcpListener;
@@ -33,7 +35,7 @@ public class Client
     public void Start()
     {
         _tcpListener.Start();
-        Console.WriteLine($"服务器启动——本机IP：{_ipAddress},端口：{_port}——等待用户接入...");
+        Console.WriteLine($"\n服务器启动——本机IP：{_ipAddress},端口：{_port}——等待用户接入...");
         WaitAndStart(); //开始监听
     }
 
@@ -73,16 +75,15 @@ public class Client
             using (networkStream)
             {
                 //输入欢迎消息
-                const string be = "welcome";
-                var bytes = Encoding.Default.GetBytes(be);
+                var bytes = Encoding.Default.GetBytes("welcome");
                 networkStream.Write(bytes, 0, bytes.Length);
-
+                
                 //开启一个线程发心跳
                 var thread = new Thread(HeartBeat);
                 thread.Name = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString() + "heart";
                 thread.Start(tcpClient);
 
-                var buffer = new byte[1024]; //开辟1024字节的空间维护收到的数据
+                var buffer = new byte[10240]; //开辟10240字节的空间维护收到的数据(10MB)/开启细节占用时占用比较多
                 int getbytes; //获取的数组长度
                 var messageStream = new MemoryStream(); // 使用内存作临时缓存
                 // 读取数据并存储到字节数组中
@@ -97,12 +98,22 @@ public class Client
                             // 将接收到的数据写入到缓存中
                             messageStream.Write(buffer, 0, getbytes);
                         }
-                        //先转字节再转字符串
-                        var getString = Encoding.Default.GetString(messageStream.ToArray()); 
+
+                        var getString = Encoding.Default.GetString(messageStream.ToArray()); //先转字节再转字符串
                         var dataType = ResultWM<string>.GetDataType(getString); //获取处理后数据
                         var typeGet = TypeSolve.TypeGet(dataType); //获取相对应类型的返回值
-                        Console.WriteLine(typeGet?.GetType()+"\n"+typeGet?.ToString());
+                        //根据命令类别触发不同方法
+                        switch (typeGet)
+                        {
+                            case "String":
+                                Console.WriteLine(dataType[1]);
+                                break;
+                            case "Action_Get_Info":
+                                Client_Action.Get_Info(networkStream, dataType[1]);
+                                break;
+                        }
 
+                        Console.WriteLine(typeGet);
                     }
                     catch (Exception e)
                     {
@@ -146,11 +157,19 @@ public class Client
 
                 Thread.Sleep(1000);
             }
+            catch (ObjectDisposedException e)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                // Console.WriteLine(Thread.CurrentThread.Name + "：心跳循环停止:\n" + e);
+                Console.WriteLine(Thread.CurrentThread.Name + "：用户断开连接/对象释放");
+                Console.ResetColor();
+                break;
+            }
             catch (Exception e)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(Thread.CurrentThread.Name + "：心跳循环停止:\n" + e);
-                Console.WriteLine(Thread.CurrentThread.Name + "：用户断开连接");
+                Console.WriteLine(Thread.CurrentThread.Name + "服务端出错");
                 Console.ResetColor();
                 break;
             }
