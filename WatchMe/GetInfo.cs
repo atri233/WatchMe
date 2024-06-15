@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
 using NickStrupat;
 
 namespace WatchMe;
 
 public class GetInfo
 {
+    private string Name;
     private bool showEve ;//是否显示每个进程的具体占用
     private string systemArchitecture; //系统架构
     private string operatingSystem;   //操作系统
@@ -33,8 +33,9 @@ public class GetInfo
     /// </summary>
     public void SetInfo()
     {
+        Name = "GetInfo";
         var p = Process.GetProcesses(); //获取所以正在运行的进程信息
-
+        
         totalMem = 0;//总占用内存
         /*
          * 获取所有进程占用内存
@@ -74,12 +75,12 @@ public class GetInfo
         
         
     }
-    
-    public void Get()
-    {
-        
-    }
 
+    public string Name1
+    {
+        get => Name;
+        set => Name = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     public bool ShowEve
     {
@@ -152,4 +153,5 @@ public class GetInfo
         get => info;
         set => info = value;
     }
+    
 }

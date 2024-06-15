@@ -1,8 +1,12 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace WatchMe;
 
+/// <summary>
+/// 服务端
+/// </summary>
 public class Client
 {
     private readonly IPAddress _ipAddress;
@@ -21,6 +25,7 @@ public class Client
         //创建实例监控IP与端口（端口调用时传入）
         _tcpListener = new TcpListener(_ipAddress, _port);
     }
+
     /// <summary>
     ///     服务器启动
     /// </summary>
@@ -28,64 +33,120 @@ public class Client
     {
         _tcpListener.Start();
         Console.WriteLine($"服务器启动——本机IP：{_ipAddress},端口：{_port}——等待用户接入...");
-        ListenUser();
+        WaitAndStart(); //开始监听
     }
+
+    /// <summary>
+    /// 监听是否有用户连接
+    /// 开启多线程进行服务
+    /// </summary>
+    private void WaitAndStart()
+    {
+        while (true)
+        {
+            try
+            {
+                var acceptTcpClient = _tcpListener.AcceptTcpClient(); //循环监听是否有用户连入（阻塞方法）
+                var thread = new Thread(ListenUser); //单独为不同用户开启线程进行服务
+                thread.Name = ((IPEndPoint)acceptTcpClient.Client.RemoteEndPoint).Address.ToString(); //用户ip为线程名
+                thread.Start(acceptTcpClient); //运行线程
+                Console.WriteLine("连接用户ip：" + thread.Name);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("服务器出错：" + e);
+                break;
+            }
+        }
+    }
+
     /// <summary>
     ///     服务器开始监听（输出监听数据）
     /// </summary>
-    private void ListenUser()
+    private static void ListenUser(object? acceptTcpClient)
     {
-        while (true)
-            try
+        try
+        {
+            var tcpClient = (TcpClient)acceptTcpClient;
+            var networkStream = tcpClient.GetStream(); //接收网络数据流(自动释放)(阻塞式的方式)
+            using (networkStream)
             {
-                var tcpClient = _tcpListener.AcceptTcpClient(); //每次接受一个用户端开启一个TcpClient
-                var networkStream = tcpClient.GetStream(); //接收网络数据流
-                //开启二进制流
-                BinaryReader reader = new(networkStream);
-                BinaryWriter writer = new(networkStream);
                 //开启一个线程发心跳
                 var thread = new Thread(HeartBeat);
-                thread.Start(networkStream);
-                //循环接受用户传来的信息
+                thread.Name = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString() + "heart";
+                thread.Start(tcpClient);
+
+                var buffer = new byte[1024]; //开辟1024字节的空间维护收到的数据
+                int getbytes; //获取的数组长度
+                var messageStream = new MemoryStream(); // 使用内存作临时缓存
+                // 读取数据并存储到字节数组中
                 while (true)
                 {
                     try
                     {
-                        lock (reader)
+                        getbytes = networkStream.Read(buffer, 0, buffer.Length);
+                        if (getbytes > 0)
                         {
-                            var readString = reader.ReadString();
-                            Console.WriteLine("接受的网络信息流：" + readString);
-                            
+                            // 将接收到的数据写入到缓存中
+                            messageStream.Write(buffer, 0, getbytes);
                         }
-                        
+
+                        var getBytes = messageStream.ToArray(); //收到的消息转字节数组
+                        var getString = Encoding.Default.GetString(getBytes); //将字节数组编码成String字符串
+                        //普通文本输出
+                        Console.WriteLine(getString);
+                        //将字符串反序列化为对象(需要一个对象标识)
+                        // Console.WriteLine("接受的网络信息流：\n" + JsonSerializer.Deserialize<GetInfo>(getString).MachineName);
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("连接异常关闭："+e);
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine(thread.Name + "：连接非主动断开：\n" + e);
+                        Console.ResetColor();
                         break;
                     }
                 }
-                networkStream.Dispose(); //释放数据流中的数据
-                tcpClient.Close();  //关闭连接实例
+            }
+        }
+        catch (Exception e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("服务器异常关闭：\n" + e);
+            Console.ResetColor();
+        }
+    }
+
+    /// <summary>
+    /// 心跳循环(使用TcpClient.Available判断用户是否断开连接)
+    /// </summary>
+    /// <param name="data"></param>
+    private static void HeartBeat(object? networkStream)
+    {
+        if (networkStream == null) return;
+        var tcpClient = (TcpClient)networkStream;
+        while (true)
+        {
+            try
+            {
+                // var writer = new BinaryWriter((NetworkStream)data);
+                // writer.Write("W");
+                var tcpClientAvailable = tcpClient.Available;
+                if (tcpClientAvailable != 0)
+                {
+                    Console.WriteLine(Thread.CurrentThread.Name + "：心跳循环停止:\n");
+                    Console.WriteLine(Thread.CurrentThread.Name + "：用户断开连接");
+                    break;
+                }
+                Thread.Sleep(1000);
             }
             catch (Exception e)
             {
-                Console.WriteLine("服务器异常关闭："+e);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(Thread.CurrentThread.Name + "：心跳循环停止:\n" + e);
+                Console.WriteLine(Thread.CurrentThread.Name + "：用户断开连接");
+                Console.ResetColor();
                 break;
             }
-    }
-    /// <summary>
-    ///     心跳循环
-    /// </summary>
-    /// <param name="data"></param>
-    private static void HeartBeat(object? data)
-    {
-        if (data == null) return;
-        while (true)
-        {
-            var writer = new BinaryWriter((NetworkStream)data);
-            writer.Write("Live");
-            Thread.Sleep(2000);
         }
     }
 }
