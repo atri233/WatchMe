@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfUser", "WpfUser\WpfUser.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfConnect", "WpfConnect\WpfConnect.csproj", "{46A8B19E-2C2C-4D3F-B93B-173099A124C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogMe", "LogMe\LogMe.csproj", "{202B16DB-5B56-443D-A0D1-21179BAB929C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogSelf", "LogSelf\LogSelf.csproj", "{CD140A16-90BD-4A08-AE56-DBE9FE3ED6DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,9 +32,9 @@ Global
 		{46A8B19E-2C2C-4D3F-B93B-173099A124C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46A8B19E-2C2C-4D3F-B93B-173099A124C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46A8B19E-2C2C-4D3F-B93B-173099A124C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{202B16DB-5B56-443D-A0D1-21179BAB929C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{202B16DB-5B56-443D-A0D1-21179BAB929C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{202B16DB-5B56-443D-A0D1-21179BAB929C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{202B16DB-5B56-443D-A0D1-21179BAB929C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD140A16-90BD-4A08-AE56-DBE9FE3ED6DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD140A16-90BD-4A08-AE56-DBE9FE3ED6DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD140A16-90BD-4A08-AE56-DBE9FE3ED6DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD140A16-90BD-4A08-AE56-DBE9FE3ED6DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -7,7 +7,7 @@
 public class ResultWM<T>
 {
     private T _data;
-    
+
     public ResultWM(T data)
     {
         this._data = data;
@@ -22,6 +22,7 @@ public class ResultWM<T>
     {
         return new ResultWM<T>(t);
     }
+
     /// <summary>
     /// 获取信息类别与信息内容
     /// </summary>
@@ -32,7 +33,7 @@ public class ResultWM<T>
         var strings = data.Split("WMTYPE");
         return strings;
     }
-    
+
     public T Data1
     {
         get => _data;

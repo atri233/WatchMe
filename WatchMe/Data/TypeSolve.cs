@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using WatchMe.application;
-
-namespace WatchMe;
+﻿namespace WatchMe;
 
 public class TypeSolve
 {
@@ -12,7 +9,6 @@ public class TypeSolve
     /// <returns>处理后数据</returns>
     public static object? TypeGet(string[] data)
     {
-  
         return data[0] switch
         {
             "string" => "String",

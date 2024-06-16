@@ -6,7 +6,6 @@ namespace WatchMe.application;
 
 public class JsonOptions
 {
-    
     /// <summary>
     /// json序列化配置
     /// </summary>
