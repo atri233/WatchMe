@@ -18,13 +18,14 @@ public class Client_Action
         try
         {
             var networkStream = (NetworkStream)o;
-            var bytes = Encoding.Default.GetBytes(JsonSerializer.Serialize(new GetInfo(Convert.ToBoolean(showEve)),JsonOptions.Option()));
+            var serialize = JsonSerializer.Serialize(new GetInfo(Convert.ToBoolean(showEve)), JsonOptions.Option());
+            var bytes = Encoding.Default.GetBytes(serialize);
             networkStream?.Write(bytes, 0, bytes.Length);
             LogSelf.Success("成功"); 
         }
         catch (Exception e)
         {
-            LogSelf.Error("获取系统环境出错"+e);
+            LogSelf.Error("序列化出错/写入流出错\n"+e);
             throw;
         }
         

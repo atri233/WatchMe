@@ -20,6 +20,7 @@ public class GetInfo
     private double workingSet; //本应用占用内存
     private string? info; //每个进程的具体占用
 
+    
     /// <summary>
     /// 有参，是否显示具体占用
     /// </summary>
