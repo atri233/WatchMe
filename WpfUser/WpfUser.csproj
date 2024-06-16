@@ -13,4 +13,8 @@
       <ProjectReference Include="..\WpfConnect\WpfConnect.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="System.IO.Pipelines" Version="9.0.0-preview.5.24306.7" />
+    </ItemGroup>
+
 </Project>

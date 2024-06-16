@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Buffers;
+using System.Net.Sockets;
 using System.Text;
 
 namespace WatchMeUser;
@@ -20,29 +21,25 @@ class Program
                 var networkStream = tcpClient.GetStream(); //接收网络数据流(自动释放)(阻塞式的方式)
 
                 //欢迎消息
-                var be = Encoding.Default.GetBytes("string" + Head + "Connet");
+                var be = Encoding.Default.GetBytes("GetInfo" + Head + "false");
                 networkStream.Write(be, 0, be.Length);
 
-                var buffer = new byte[1024]; //开辟1024字节的空间维护收到的数据
+                var arrayPool = ArrayPool<byte>.Shared;
                 int getbytes; //获取的数组长度
-                var messageStream = new MemoryStream(); // 使用内存作临时缓存
-
                 while (true)
                 {
                     try
                     {
-                        getbytes = networkStream.Read(buffer, 0, buffer.Length); //阻塞
-
-
-                        if (getbytes > 0)
-                        {
-                            // 将接收到的数据写入到缓存中
-                            messageStream.Write(buffer, 0, getbytes);
-                        }
-
-                        var getBytes = messageStream.ToArray(); //收到的消息转字节数组
+                        var buffer = arrayPool.Rent(2048);//借用1024字节的数组空间维护收到的数据
+                        getbytes = networkStream.Read(buffer, 0, buffer.Length); //阻塞(接受单次传输的所有包)
+                        // arrayPool.Return(buffer);//归还数组缓存
+                        if (getbytes <= 0) continue;
+                        
+                        var enumerable = buffer.Take(getbytes);
+                        var getBytes = enumerable.ToArray(); //收到的消息转字节数组
                         var getString = Encoding.Default.GetString(getBytes); //将字节数组编码成String字符串
-                        //普通文本输出
+                        arrayPool.Return(buffer);//归还数组缓存
+                        
                         Console.WriteLine(getString);
                     }
                     catch (Exception e)
