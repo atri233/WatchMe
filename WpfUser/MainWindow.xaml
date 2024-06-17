@@ -3,21 +3,41 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:local="clr-namespace:UserWpf"
         mc:Ignorable="d"
-        Title="UserWindow" Height="400" Width="400">
-    <Grid ShowGridLines="True">
+        Title="UserWindow" Height="800" Width="600">
+    <Grid ShowGridLines="False">
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="40"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         
-        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
-            <Button Height="20" Width="70" Content="连接" Click="button1_Click"></Button>
-            <Button Height="20" Width="70"></Button>
-            <Button Height="20" Width="70"></Button>
-            <Button Height="20" Width="70"></Button>
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Background="#d3d3d3">
+            <Menu Grid.Row="0">
+                <MenuItem Header="连接" Height="60" Width="60">
+                    <ui:Button Content="连接" Click="button1_Click" Icon="{ui:SymbolIcon Add12}"/>
+                    <Button Content="断开连接"/>
+                </MenuItem>
+            </Menu>
+            <Menu Grid.Row="0">
+                <MenuItem Header="设置" Height="60" Width="60">
+
+                </MenuItem>
+            </Menu>
+            <Menu Grid.Row="0">
+                <MenuItem Header="帮助" Height="60" Width="60">
+                    <!-- <ui:Button Content="关于WatchMe" Icon="{ui:SymbolIcon ArrowUpRight16}"/> -->
+                    <!-- <ui:Anchor Content="github" NavigateUri="https://github.com/lowkidzhao/WatchMe" Icon="{ui:SymbolIcon ArrowUpRight16}"/> -->
+                <Canvas Width="150" Height="95">
+                    <ui:Button Content="关于WatchMe"/>
+                    <ui:Anchor Canvas.Left="120" Icon="{ui:SymbolIcon ArrowUpRight16,FontSize=20}"></ui:Anchor>
+                    <Button Content="开发者文档" Canvas.Top="40"></Button>
+                </Canvas>
+                </MenuItem>
+            </Menu>
         </StackPanel>
+        
         
         <Grid Grid.Row="1" Grid.Column="0">
             
