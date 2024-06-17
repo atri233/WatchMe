@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Unicode;
 
-namespace WatchMe.application;
+namespace WatchMe;
 
 public class JsonOptions
 {

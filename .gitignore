@@ -5,5 +5,22 @@ riderModule.iml
 /_ReSharper.Caches/
 .idea/
 .git/
-/WpfConnect/
-/WpfUser/
+WpfConnect/
+WpfUser/
+/LogSelf/
+
+## 包文件
+#*.zip
+#*.rar
+#*.gz
+#*.tar
+#*.7z
+#
+# 日志和临时文件
+*.log
+*.tmp
+*.bak
+*.swp
+
+*.csproj.user
+
