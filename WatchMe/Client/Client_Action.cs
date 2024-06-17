@@ -7,6 +7,9 @@ namespace WatchMe;
 
 public class Client_Action
 {
+    static string Head = "WMTYPE"; //头信息
+    static string Tail = "WMOVER"; //尾信息
+    
     /// <summary>
     /// 获取系统环境
     /// </summary>
@@ -19,7 +22,7 @@ public class Client_Action
         {
             var networkStream = (NetworkStream)o;
             var serialize = JsonSerializer.Serialize(new GetInfo(Convert.ToBoolean(showEve)), JsonOptions.Option());
-            var bytes = Encoding.Default.GetBytes(serialize);
+            var bytes = Encoding.Default.GetBytes("GetInfo"+Head+serialize);
             networkStream?.Write(bytes, 0, bytes.Length);
             LogSelf.Success("成功"); 
         }

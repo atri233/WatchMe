@@ -35,7 +35,8 @@ public class Client
     public void Start()
     {
         _tcpListener.Start();
-        Console.WriteLine($"\n服务器启动——本机IP：{_ipAddress},端口：{_port}——等待用户接入...");
+        LogSelf.Result($"服务器启动——本机IP：{_ipAddress},端口：{_port}——等待用户接入...");
+        // Console.WriteLine($"\n服务器启动——本机IP：{_ipAddress},端口：{_port}——等待用户接入...");
         WaitAndStart(); //开始监听
     }
 
@@ -53,13 +54,12 @@ public class Client
 
                 var thread = new Thread(ListenUser); //创建监听线程
                 thread.Name = ((IPEndPoint)acceptTcpClient.Client.RemoteEndPoint).Address.ToString(); //用户ip为线程名
+                LogSelf.Receive("连接用户ip：" + thread.Name);
                 thread.Start(acceptTcpClient); //运行监听线程
 
                 var threadout = new Thread(OutUser); //闯将输出线程
                 threadout.Name = ((IPEndPoint)acceptTcpClient.Client.RemoteEndPoint).Address.ToString(); //用户ip为线程名
                 threadout.Start(acceptTcpClient); //运行输出线程
-
-                LogSelf.Receive("连接用户ip：" + thread.Name);
             }
             catch (Exception e)
             {
@@ -138,7 +138,7 @@ public class Client
         var networkStream = tcpClient.GetStream(); //接收网络数据流(自动释放)(阻塞式的方式)
 
         //输入欢迎消息
-        var bytess = Encoding.Default.GetBytes("welcome");
+        var bytess = Encoding.Default.GetBytes("string"+Head+"welcome");
         networkStream.Write(bytess, 0, bytess.Length);
 
         //开启一个线程发心跳
